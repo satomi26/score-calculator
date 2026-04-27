@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>運動会スコア</title>
+<style>
+body { font-family: sans-serif; text-align: center; }
+button { font-size: 20px; margin: 5px; padding: 10px; }
+.score { font-size: 28px; margin: 10px; }
+</style>
+</head>
+<body>
+
+<h2>徒競走スコア</h2>
+
+<div class="score">赤: <span id="red">0</span> 点</div>
+<div class="score">白: <span id="white">0</span> 点</div>
+
+<h3>順位入力</h3>
+
+<div id="inputs"></div>
+
+<br>
+<button onclick="confirmRace()">このレース確定</button>
+<button onclick="undo()">1つ戻す</button>
+
+<script>
+let red = 0;
+let white = 0;
+let history = [];
+
+const points = [4,3,2,1];
+
+function createInputs(){
+  let html = "";
+  for(let i=0;i<4;i++){
+    html += `<div>${i+1}位:
+      <button onclick="setPos(${i},'red')">赤</button>
+      <button onclick="setPos(${i},'white')">白</button>
+    </div>`;
+  }
+  document.getElementById("inputs").innerHTML = html;
+}
+
+let current = [null,null,null,null];
+
+function setPos(pos, team){
+  current[pos] = team;
+}
+
+function confirmRace(){
+  let r=0,w=0;
+  for(let i=0;i<4;i++){
+    if(current[i]==='red') r += points[i];
+    if(current[i]==='white') w += points[i];
+  }
+  red += r;
+  white += w;
+  history.push([r,w]);
+  update();
+  current = [null,null,null,null];
+}
+
+function undo(){
+  if(history.length===0) return;
+  let last = history.pop();
+  red -= last[0];
+  white -= last[1];
+  update();
+}
+
+function update(){
+  document.getElementById("red").innerText = red;
+  document.getElementById("white").innerText = white;
+}
+
+createInputs();
+</script>
+
+</body>
+</html>
