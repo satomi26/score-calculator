@@ -8,21 +8,18 @@ body { font-family: sans-serif; text-align: center; }
 button { font-size: 20px; margin: 5px; padding: 10px; }
 .score { font-size: 28px; margin: 10px; }
 
- .redBtn {
-  background-color: #ff4d4d;
-  color: white;
-}
+.redBtn { background-color: #ff4d4d; color: white; }
+.whiteBtn { background-color: #f0f0f0; color: black; border: 1px solid #999; }
 
-.whiteBtn {
-  background-color: #f0f0f0;
-  color: black;
-  border: 1px solid #999;
-}
+.selected { outline: 3px solid blue; }
 
-/* 選択された状態 */
-.selected {
-  outline: 3px solid blue;
-} 
+/* テーブル */
+table { margin: 20px auto; border-collapse: collapse; width: 90%; max-width: 500px; }
+th, td { border: 1px solid #aaa; padding: 8px; }
+th { background-color: #ddd; }
+tr:hover { background-color: #f5f5f5; cursor: pointer; }
+.redCell { background-color: #ffcccc; }
+.whiteCell { background-color: #ffffff; }
 </style>
 </head>
 <body>
@@ -33,17 +30,37 @@ button { font-size: 20px; margin: 5px; padding: 10px; }
 <div class="score">白: <span id="white">0</span> 点</div>
 
 <h3>順位入力</h3>
-
 <div id="inputs"></div>
 
 <br>
 <button onclick="confirmRace()">このレース確定</button>
 <button onclick="undo()">1つ戻す</button>
 
+<h3>順位ログ</h3>
+<table id="raceTable">
+  <tr>
+    <th>レース</th>
+    <th>1位</th>
+    <th>2位</th>
+    <th>3位</th>
+    <th>4位</th>
+  </tr>
+</table>
+
+<h3>得点ログ</h3>
+<table id="scoreTable">
+  <tr>
+    <th>レース</th>
+    <th>赤</th>
+    <th>白</th>
+  </tr>
+</table>
+
 <script>
 let red = 0;
 let white = 0;
 let history = [];
+let raceCount = 0;
 
 const points = [4,3,2,1];
 
@@ -59,25 +76,15 @@ function createInputs(){
   document.getElementById("inputs").innerHTML = html;
 }
 
-  
 let current = [null,null,null,null];
 
 function setPos(pos, team){
   current[pos] = team;
-
-  // 同じ行のボタンを取得
   const row = document.getElementById("inputs").children[pos];
   const buttons = row.querySelectorAll("button");
-
-  // 一旦リセット
   buttons.forEach(btn => btn.classList.remove("selected"));
-
-  // 選択された方にクラス付与
-  if(team === 'red'){
-    buttons[0].classList.add("selected");
-  } else {
-    buttons[1].classList.add("selected");
-  }
+  if(team === 'red') buttons[0].classList.add("selected");
+  else buttons[1].classList.add("selected");
 }
 
 function confirmRace(){
@@ -86,11 +93,60 @@ function confirmRace(){
     if(current[i]==='red') r += points[i];
     if(current[i]==='white') w += points[i];
   }
+
   red += r;
   white += w;
-  history.push([r,w]);
+  history.push([r,w,current.slice()]);
+  raceCount++;
+
+  addRaceRow(raceCount, current);
+  addScoreRow(raceCount, r, w);
+
   update();
   current = [null,null,null,null];
+  createInputs();
+}
+
+function addRaceRow(num, arr){
+  const table = document.getElementById("raceTable");
+  const row = table.insertRow(-1);
+
+  row.onclick = () => deleteRace(num, row);
+
+  row.insertCell(0).innerText = num;
+  for(let i=0;i<4;i++){
+    const cell = row.insertCell(-1);
+    cell.innerText = arr[i] === 'red' ? '赤' : '白';
+    cell.className = arr[i] === 'red' ? 'redCell' : 'whiteCell';
+  }
+}
+
+function addScoreRow(num, r, w){
+  const table = document.getElementById("scoreTable");
+  const row = table.insertRow(-1);
+
+  row.onclick = () => deleteRace(num, row);
+
+  row.insertCell(0).innerText = num;
+  row.insertCell(1).innerText = r;
+  row.insertCell(2).innerText = w;
+}
+
+function deleteRace(num, row){
+  if(!confirm(num + "レース目を削除しますか？")) return;
+
+  const index = num - 1;
+  const [r, w] = history[index];
+
+  red -= r;
+  white -= w;
+
+  history[index] = [0,0,["-","-","-","-"]];
+
+  update();
+
+  row.style.textDecoration = "line-through";
+  row.style.opacity = "0.5";
 }
 
 function undo(){
