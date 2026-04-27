@@ -7,6 +7,22 @@
 body { font-family: sans-serif; text-align: center; }
 button { font-size: 20px; margin: 5px; padding: 10px; }
 .score { font-size: 28px; margin: 10px; }
+
+ .redBtn {
+  background-color: #ff4d4d;
+  color: white;
+}
+
+.whiteBtn {
+  background-color: #f0f0f0;
+  color: black;
+  border: 1px solid #999;
+}
+
+/* 選択された状態 */
+.selected {
+  outline: 3px solid blue;
+} 
 </style>
 </head>
 <body>
@@ -34,18 +50,34 @@ const points = [4,3,2,1];
 function createInputs(){
   let html = "";
   for(let i=0;i<4;i++){
-    html += `<div>${i+1}位:
-      <button onclick="setPos(${i},'red')">赤</button>
-      <button onclick="setPos(${i},'white')">白</button>
+    html += `<div>
+      ${i+1}位:
+      <button class="redBtn" onclick="setPos(${i},'red')">赤</button>
+      <button class="whiteBtn" onclick="setPos(${i},'white')">白</button>
     </div>`;
   }
   document.getElementById("inputs").innerHTML = html;
 }
 
+  
 let current = [null,null,null,null];
 
 function setPos(pos, team){
   current[pos] = team;
+
+  // 同じ行のボタンを取得
+  const row = document.getElementById("inputs").children[pos];
+  const buttons = row.querySelectorAll("button");
+
+  // 一旦リセット
+  buttons.forEach(btn => btn.classList.remove("selected"));
+
+  // 選択された方にクラス付与
+  if(team === 'red'){
+    buttons[0].classList.add("selected");
+  } else {
+    buttons[1].classList.add("selected");
+  }
 }
 
 function confirmRace(){
