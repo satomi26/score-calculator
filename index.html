@@ -87,7 +87,6 @@ function setPos(pos, team){
   else buttons[1].classList.add("selected");
 }
 
-
 function confirmRace(){
   // 未入力チェック
   if (current.includes(null)) {
@@ -95,10 +94,17 @@ function confirmRace(){
     return;
   }
 
-  
+  // ここで r, w を計算する
+  let r = 0;
+  let w = 0;
+  for (let i = 0; i < 4; i++) {
+    if (current[i] === 'red') r += points[i];
+    else if (current[i] === 'white') w += points[i];
+  }
+
   red += r;
   white += w;
-  history.push([r,w,current.slice()]);
+  history.push([r, w, current.slice()]);
   raceCount++;
 
   addRaceRow(raceCount, current);
@@ -118,8 +124,15 @@ function addRaceRow(num, arr){
   row.insertCell(0).innerText = num;
   for(let i=0;i<4;i++){
     const cell = row.insertCell(-1);
-    cell.innerText = arr[i] === 'red' ? '赤' : '白';
-    cell.className = arr[i] === 'red' ? 'redCell' : 'whiteCell';
+    if (arr[i] === 'red') {
+      cell.innerText = '赤';
+      cell.className = 'redCell';
+    } else if (arr[i] === 'white') {
+      cell.innerText = '白';
+      cell.className = 'whiteCell';
+    } else {
+      cell.innerText = '-';
+    }
   }
 }
 
@@ -180,7 +193,6 @@ function undo(){
   update();
 }
 
-
 function update(){
   document.getElementById("red").innerText = red;
   document.getElementById("white").innerText = white;
@@ -188,6 +200,7 @@ function update(){
 
 createInputs();
 </script>
+
 
 </body>
 </html>
