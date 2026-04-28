@@ -87,13 +87,15 @@ function setPos(pos, team){
   else buttons[1].classList.add("selected");
 }
 
+
 function confirmRace(){
-  let r=0,w=0;
-  for(let i=0;i<4;i++){
-    if(current[i]==='red') r += points[i];
-    if(current[i]==='white') w += points[i];
+  // 未入力チェック
+  if (current.includes(null)) {
+    alert("全ての順位に赤か白を選んでください");
+    return;
   }
 
+  
   red += r;
   white += w;
   history.push([r,w,current.slice()]);
@@ -150,12 +152,34 @@ function deleteRace(num, row){
 }
 
 function undo(){
-  if(history.length===0) return;
+  if(history.length === 0) return;
+
+  // 最後の履歴を取得
   let last = history.pop();
-  red -= last[0];
-  white -= last[1];
+  let r = last[0];
+  let w = last[1];
+
+  // 点数を戻す
+  red -= r;
+  white -= w;
+
+  // raceTable の最後の行を削除
+  let raceTable = document.getElementById("raceTable");
+  if (raceTable.rows.length > 1) {
+    raceTable.deleteRow(-1);
+  }
+
+  // scoreTable の最後の行を削除
+  let scoreTable = document.getElementById("scoreTable");
+  if (scoreTable.rows.length > 1) {
+    scoreTable.deleteRow(-1);
+  }
+
+  raceCount--;
+
   update();
 }
+
 
 function update(){
   document.getElementById("red").innerText = red;
