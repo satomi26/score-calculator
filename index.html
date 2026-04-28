@@ -20,6 +20,10 @@ th { background-color: #ddd; }
 tr:hover { background-color: #f5f5f5; cursor: pointer; }
 .redCell { background-color: #ffcccc; }
 .whiteCell { background-color: #ffffff; }
+
+.tableWrap {overflow-x: auto;-webkit-overflow-scrolling: touch;　width: 100%;}
+
+table {min-width: 450px; /* スマホで横スクロールさせるための最低幅 */}
 </style>
 </head>
 <body>
@@ -37,6 +41,7 @@ tr:hover { background-color: #f5f5f5; cursor: pointer; }
 <button onclick="undo()">1つ戻す</button>
 
 <h3>順位ログ</h3>
+<div class="tableWrap">
 <table id="raceTable">
   <tr>
     <th>レース</th>
@@ -46,8 +51,10 @@ tr:hover { background-color: #f5f5f5; cursor: pointer; }
     <th>4位</th>
   </tr>
 </table>
+</div>
 
 <h3>得点ログ</h3>
+<div class="tableWrap">
 <table id="scoreTable">
   <tr>
     <th>レース</th>
@@ -55,7 +62,7 @@ tr:hover { background-color: #f5f5f5; cursor: pointer; }
     <th>白</th>
   </tr>
 </table>
-
+</div>
 <script>
 let red = 0;
 let white = 0;
